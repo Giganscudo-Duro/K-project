@@ -1,0 +1,50 @@
+# 回線が途中で切れた時に自動でdetachする
+autodetach on
+
+# エンコード関係
+defkanji utf-8
+defencoding utf-8
+encoding utf-8 utf-8
+
+
+
+# 表示の履歴保持行数
+defscrollback 20000
+
+
+# コマンド文字としてTを設定し、リテラルコマンドにtを設定する
+# デフォルトだと、^Aa
+# Emacs 使う時にかぶるからね...
+escape ^Tt
+
+# 起動時のメッセージ表示を無効化
+startup_message off
+
+
+
+# キャプション設定
+caption always ">> %-w%10L>%{=b gw}[ %n %t ]%{-}%+w%-0="
+hardstatus alwayslastline "%H%=OriginalScreen%=%Y/%m/%d %02c"
+
+
+
+# "alternate screen (lessやviを端末上に表示する仕組み)"をscreenでも有効に
+altscreen on
+
+
+# コマンドをキーに割り当てる
+# 形式は bind key [command] でOK
+bind n screen
+bind h prev
+bind j next
+bind l windowlist
+bind c copy
+bind p paste . 
+# paste は、「.」の後に半角スペースが必要。
+
+
+
+# デフォルトで screen を3つ開く
+screen
+screen
+screen

@@ -1,2 +1,2 @@
-# README
-This is develop branch.
+# K-project
+個人で勉強した内容をまとめてるだけっす
