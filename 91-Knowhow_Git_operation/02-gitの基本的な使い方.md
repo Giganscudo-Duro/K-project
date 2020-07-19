@@ -94,12 +94,12 @@ Cloning into 'study-git-command'...
 warning: You appear to have cloned an empty repository.
 ```
 
-空っぽの git がクローンされたはずなので、`test-git-command` ディレクトリに移動する。
+空っぽの git がクローンされたはずなので、`study-git-command` ディレクトリに移動する。
 ```sh
 $ cd study-git-command/
 ```
 
-`test-git-command` ディレクトリ内で README.md ファイルを作成する。
+`study-git-command` ディレクトリ内で README.md ファイルを作成する。
 ```sh
 $ echo "This is README file." > README.md
 $ echo "This is master branch." >> README.md
@@ -118,7 +118,6 @@ master ブランチの作成 ＆ README.md をリモートリポジトリに pus
 
 2. `git commit` コマンドで、ローカルリポジトリにコミット  
     開発マシン上で、以下のコマンドを実行する。  
-    指定する文字列部には、「変更内容」を入力する（今回は test とした）。
     ```sh
     $ git commit -m "Create master branch"
     [master (root-commit) 94f2ff4] Create master branch
@@ -638,11 +637,11 @@ Delta compression using up to 2 threads.
 Compressing objects: 100% (3/3), done.
 Writing objects: 100% (4/4), 395 bytes | 395.00 KiB/s, done.
 Total 4 (delta 0), reused 0 (delta 0)
-To https://github.com/Giganscudo-Duro/test-git-command.git
+To https://github.com/Giganscudo-Duro/study-git-command.git
    34d60d8..35a3d79  kana-develop -> kana-develop
 Branch 'kana-develop' set up to track remote branch 'kana-develop' from 'origin'.
 ```
-はい、これで上流ブランチが kana-develop にも追加されました。
+はい、これで上流ブランチが kana-develop にも追加されました!!!!
 ```sh
 $ git branch -vv
   develop      c7b415d [origin/develop] create develop branch
