@@ -120,9 +120,8 @@ kanamaru@vm-ubuntu18:~$ curl -d "client_id=admin-cli"   -d "username=admin"   -d
   "session_state": "b97b868e-526a-4b5c-9112-ced8ff7cc5c7",
   "scope": "email profile"
 }
-```　
+```
 </div></details>
-
 
 
 
