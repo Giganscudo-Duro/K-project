@@ -125,3 +125,235 @@ kanamaru@vm-ubuntu18:~$ curl -d "client_id=admin-cli"   -d "username=admin"   -d
 
 
 
+
+## ユーザ一覧を取得する
+
+```sh
+$ curl   -H "Authorization: bearer <ACCESS_TOKEN>" \
+  "172.12.0.2:8080/auth/admin/realms/master/users"
+```
+
+
+<details><summary>実行結果</summary><div>
+
+面倒なので、トークンやらなんやらを設定して実行
+```sh
+KEYCLOAK_URL=http://localhost:8080/auth
+KEYCLOAK_REALM=master
+KEYCLOAK_CLIENT_ID=admin
+KEYCLOAK_CLIENT_SECRET=admin
+
+export TOKEN=$(curl -X POST "${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token" \
+ -H "Content-Type: application/x-www-form-urlencoded" \
+ -d "username=${KEYCLOAK_CLIENT_ID}" \
+ -d "password=${KEYCLOAK_CLIENT_SECRET}" \
+ -d 'grant_type=password' \
+ -d 'client_id=admin-cli' | jq -r '.access_token')
+
+curl -X GET \
+-H "Accept: application/json" \
+-H "Authorization: Bearer ${TOKEN}" \
+"${KEYCLOAK_URL}/admin/realms/${KEYCLOAK_REALM}/users" | jq
+```
+</div></details>
+
+
+
+
+
+## 特定のユーザ情報を取得する
+
+```sh
+$ curl   -H "Authorization: bearer <ACCESS_TOKEN>" \
+  "172.12.0.2:8080/auth/admin/realms/master/users/<USERID>"
+```
+
+
+<details><summary>実行結果</summary><div>
+
+今回は実行者自身の情報を取得する。
+面倒なので、トークンやらなんやらを設定して実行
+```sh
+KEYCLOAK_URL=http://localhost:8080/auth
+KEYCLOAK_REALM=master
+KEYCLOAK_CLIENT_ID=admin
+KEYCLOAK_CLIENT_SECRET=admin
+
+export TOKEN=$(curl -X POST "${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token" \
+ -H "Content-Type: application/x-www-form-urlencoded" \
+ -d "username=${KEYCLOAK_CLIENT_ID}" \
+ -d "password=${KEYCLOAK_CLIENT_SECRET}" \
+ -d 'grant_type=password' \
+ -d 'client_id=admin-cli' | jq -r '.access_token')
+
+export USERID=$(curl -X GET "${KEYCLOAK_URL}/admin/realms/${KEYCLOAK_REALM}/users" \
+-H "Accept: application/json" \
+-d "username=${KEYCLOAK_CLIENT_ID}" \
+-H "Authorization: Bearer ${TOKEN}" | jq '.[].id')
+
+
+
+curl -X GET "${KEYCLOAK_URL}/admin/realms/${KEYCLOAK_REALM}/users" \
+-H "Accept: application/json" \
+-d "username=${KEYCLOAK_CLIENT_ID}" \
+-H "Authorization: Bearer ${TOKEN}" | jq '.[].id'
+
+
+curl -X GET \
+-H "Accept: application/json" \
+-H "Authorization: Bearer ${TOKEN}" \
+"${KEYCLOAK_URL}/admin/realms/${KEYCLOAK_REALM}/users/${USERID}" | jq
+```
+</div></details>
+
+
+
+
+## グループ一覧を取得する
+
+```sh
+$ curl   -H "Authorization: bearer <ACCESS_TOKEN>" \
+  "172.12.0.2:8080/auth/admin/realms/master/groups"
+```
+
+
+<details><summary>実行結果</summary><div>
+
+面倒なので、トークンやらなんやらを設定して実行
+```sh
+KEYCLOAK_URL=http://localhost:8080/auth
+KEYCLOAK_REALM=master
+KEYCLOAK_CLIENT_ID=admin
+KEYCLOAK_CLIENT_SECRET=admin
+
+export TOKEN=$(curl -X POST "${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token" \
+ -H "Content-Type: application/x-www-form-urlencoded" \
+ -d "username=${KEYCLOAK_CLIENT_ID}" \
+ -d "password=${KEYCLOAK_CLIENT_SECRET}" \
+ -d 'grant_type=password' \
+ -d 'client_id=admin-cli' | jq -r '.access_token')
+
+curl -X GET \
+-H "Accept: application/json" \
+-H "Authorization: Bearer ${TOKEN}" \
+"${KEYCLOAK_URL}/admin/realms/${KEYCLOAK_REALM}/groups" | jq
+```
+</div></details>
+
+
+## 特定のグループ情報を取得する
+
+```sh
+$ curl   -H "Authorization: bearer <ACCESS_TOKEN>" \
+  "172.12.0.2:8080/auth/admin/realms/master/groups"
+```
+
+
+<details><summary>実行結果</summary><div>
+
+面倒なので、トークンやらなんやらを設定して実行
+```sh
+KEYCLOAK_URL=http://localhost:8080/auth
+KEYCLOAK_REALM=master
+KEYCLOAK_CLIENT_ID=admin
+KEYCLOAK_CLIENT_SECRET=admin
+
+export TOKEN=$(curl -X POST "${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token" \
+ -H "Content-Type: application/x-www-form-urlencoded" \
+ -d "username=${KEYCLOAK_CLIENT_ID}" \
+ -d "password=${KEYCLOAK_CLIENT_SECRET}" \
+ -d 'grant_type=password' \
+ -d 'client_id=admin-cli' | jq -r '.access_token')
+
+export GROUPID=$(curl -X GET "${KEYCLOAK_URL}/admin/realms/${KEYCLOAK_REALM}/groups" \
+-H "Accept: application/json" \
+-d "username=${KEYCLOAK_CLIENT_ID}" \
+-H "Authorization: Bearer ${TOKEN}" | jq '.[].id.value')
+
+curl -X GET \
+-H "Accept: application/json" \
+-H "Authorization: Bearer ${TOKEN}" \
+"${KEYCLOAK_URL}/admin/realms/${KEYCLOAK_REALM}/groups/${GROUPID}" | jq
+```
+</div></details>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ちなみに、admin ユーザのユーザIDを取得する場合
+```sh
+KEYCLOAK_URL=http://localhost:8080/auth
+KEYCLOAK_REALM=master
+KEYCLOAK_CLIENT_ID=admin
+KEYCLOAK_CLIENT_SECRET=admin
+
+export TOKEN=$(curl -X POST "${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token" \
+ -H "Content-Type: application/x-www-form-urlencoded" \
+ -d "username=${KEYCLOAK_CLIENT_ID}" \
+ -d "password=${KEYCLOAK_CLIENT_SECRET}" \
+ -d 'grant_type=password' \
+ -d 'client_id=admin-cli' | jq -r '.access_token')
+
+
+curl -X GET \
+-H "Accept: application/json" \
+-H "Authorization: Bearer ${TOKEN}" \
+"${KEYCLOAK_URL}/admin/realms/${KEYCLOAK_REALM}/users" | jq
+
+
+curl -X GET "${KEYCLOAK_URL}/admin/realms/${KEYCLOAK_REALM}/users" \
+-H "Accept: application/json" \
+-d "username=${KEYCLOAK_CLIENT_ID}" \
+-H "Authorization: Bearer ${TOKEN}" | jq '.[] |select(.username == "admin")' | jq .id
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
