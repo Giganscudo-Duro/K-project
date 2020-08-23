@@ -320,40 +320,7 @@ curl -X GET \
 curl -X GET "${KEYCLOAK_URL}/admin/realms/${KEYCLOAK_REALM}/users" \
 -H "Accept: application/json" \
 -d "username=${KEYCLOAK_CLIENT_ID}" \
--H "Authorization: Bearer ${TOKEN}" | jq '.[] |select(.username == "admin")' | jq .id
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+-H "Authorization: Bearer ${TOKEN}" | jq ".[] |select(.username == \"admin\")" | jq .id
 ```
+
+
