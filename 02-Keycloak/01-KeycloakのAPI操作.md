@@ -6,7 +6,7 @@ https://qiita.com/matagawa/items/31e26e9cd53c3e61ae07
 https://qiita.com/rururu_kenken/items/5a7b94146cf0a2eb537d  
 https://auth0.com/blog/jp-refresh-tokens-what-are-they-and-when-to-use-them/  
 https://qiita.com/namikitakeo/items/cfb66928fad8882ea25a  
-https://www.keycloak.org/docs-api/5.0/rest-api/index.html#_groups_resource  
+https://www.keycloak.org/docs-api/5.0/rest-api/index.html  
 https://qiita.com/namikitakeo/items/cfb66928fad8882ea25a  
 
 # 構成図
