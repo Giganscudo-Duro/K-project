@@ -9,6 +9,7 @@
 - [Golang で PostgreSQL のデータを作成 (Create) - Qiita](https://qiita.com/ekzemplaro/items/54a83c130a5b62e2e88b)
 - [【Golang】Go言語からPostgreSQLを使う【sql, lib/pq】 - くどはむと猫の窓](http://kudohamu.hatenablog.com/entry/2014/11/29/121328)
 
+- [postgreSQLテーブルからjson形式でSELECTする小ネタ - Solutionware開発ブログ](https://solutionware.jp/blog/2016/06/23/postgresql%E3%83%86%E3%83%BC%E3%83%96%E3%83%AB%E3%81%8B%E3%82%89json%E5%BD%A2%E5%BC%8F%E3%81%A7select%E3%81%99%E3%82%8B%E5%B0%8F%E3%83%8D%E3%82%BF/)
 
 
 # postgreSQL のコンテナを起動
@@ -35,7 +36,7 @@
 | POSTGRES_INITDB_ARGS      |          |
 | POSTGRES_INITDB_WALDIR    |          |
 | POSTGRES_HOST_AUTH_METHOD |          |
-| PGDATA                    | データベースを差k末井するディレクトリを設定する。設定しなかった場合 `/var/lib/postgresql/data`になる         |
+| PGDATA                    | データベースを作成するディレクトリを設定する。設定しなかった場合 `/var/lib/postgresql/data`になる         |
 
 
 
@@ -89,7 +90,6 @@ func main() {
     dbname := "kana-db"
         password := "password"
 
-    //str_connect := "user=kanamaru dbname=kana-db password=password sslmode=disable"
     str_connect := "user=" + user + " dbname=" + dbname + " password=" + password + " sslmode=disable"
     db, err := sql.Open("postgres", str_connect)
     defer db.Close ()
@@ -251,10 +251,11 @@ $ go run ./read_DB.go
 # PostgresSQL からテーブルを読み出し、JSON 形式にする
 
 
+参考サイト「[postgreSQLテーブルからjson形式でSELECTする小ネタ - Solutionware開発ブログ](https://solutionware.jp/blog/2016/06/23/postgresql%E3%83%86%E3%83%BC%E3%83%96%E3%83%AB%E3%81%8B%E3%82%89json%E5%BD%A2%E5%BC%8F%E3%81%A7select%E3%81%99%E3%82%8B%E5%B0%8F%E3%83%8D%E3%82%BF/)」によると、以下の書き方だけでOKらしい。
 
-
-
-
+```
+select to_json(テーブル名) from テーブル名
+```
 
 
 
