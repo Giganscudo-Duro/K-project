@@ -130,7 +130,7 @@ import (
     "time"
     _ "database/sql"
     _ "github.com/jinzhu/gorm"
-    - "github.com/jinzhu/gorm/dialects/postgres"
+    _ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 //構造体を定義
@@ -356,5 +356,112 @@ full
 2020-08-26 21:31:12.266413 +0000 UTC
 DEBUG: Finish main
 ```
+
+### gorm でレコードを取得する方法いろいろ
+http://gorm.io/ja_JP/docs/query.html
+
+
+#### SQL 文の SELECT 相当
+- db.Find(&XXXX)
+    全てのレコードを取得する
+    ```go
+    db.Find(&users)
+    //// SELECT * FROM users;
+    ```
+
+- `db.First(&XXXX)`
+    主キーでソートし、最初のレコードを取得する
+    ```go
+    db.First(&user)
+    //// SELECT * FROM users ORDER BY id LIMIT 1;
+    ```
+
+- `db.Last(&XXXX)`
+    主キーでソートし、最後のレコードを取得する
+    ```go
+    db.Last(&user)
+    //// SELECT * FROM users ORDER BY id DESC LIMIT 1;
+    ```
+
+- `db.Take(&XXXX)`
+    ソートせずにレコードを1行取得する
+    ```go
+    db.Take(&user)
+    //// SELECT * FROM users LIMIT 1;
+    ```
+
+- `db.First(&XXXX, 主キーNUM)`
+    主キーを指定してレコードを取得する（主キーがinteger型の場合のみ使用可能）
+    ```go
+    db.First(&user, 10)
+    //// SELECT * FROM users WHERE id = 10;
+    ```
+
+
+
+#### SQL 文の WHERE によるフィルタリング
+https://www.dbonline.jp/mysql/ini/index7.html
+
+- 最初にマッチしたレコードを一つ取得
+```go
+// Get first matched record
+db.Where("name = ?", "jinzhu").First(&user)
+//// SELECT * FROM users WHERE name = 'jinzhu' ORDER BY id LIMIT 1;
+```
+- マッチしたレコード全てを取得
+```go
+// Get all matched records
+db.Where("name = ?", "jinzhu").Find(&users)
+//// SELECT * FROM users WHERE name = 'jinzhu';
+```
+
+- マッチしないレコード全てを取得
+```go
+// <>
+db.Where("name <> ?", "jinzhu").Find(&users)
+//// SELECT * FROM users WHERE name <> 'jinzhu';
+```
+
+- カッコ内のいずれかにマッチしたレコード全てを取得
+```go
+// IN
+db.Where("name IN (?)", []string{"jinzhu", "jinzhu 2"}).Find(&users)
+//// SELECT * FROM users WHERE name in ('jinzhu','jinzhu 2');
+```
+
+- 正規表現を使用したマッチングパターンでマッチしたレコード全てを取得
+```go
+// LIKE
+db.Where("name LIKE ?", "%jin%").Find(&users)
+//// SELECT * FROM users WHERE name LIKE '%jin%';
+```
+
+- 複数のマッチングパターンの両方にマッチしたレコード全てを取得
+```go
+// AND
+db.Where("name = ? AND age >= ?", "jinzhu", "22").Find(&users)
+//// SELECT * FROM users WHERE name = 'jinzhu' AND age >= 22;
+```
+
+
+- Time 型の項目に対するマッチングパターンにマッチしたレコード全てを取得
+```go
+// Time
+db.Where("updated_at > ?", lastWeek).Find(&users)
+//// SELECT * FROM users WHERE updated_at > '2000-01-01 00:00:00';
+```
+
+- 数値の範囲に該当するマッチングパターンにマッチしたレコード全てを取得
+```go
+// BETWEEN
+db.Where("created_at BETWEEN ? AND ?", lastWeek, today).Find(&users)
+//// SELECT * FROM users WHERE created_at BETWEEN '2000-01-01 00:00:00' AND '2000-01-08 00:00:00';
+```
+
+- 数値の範囲に該当するマッチングパターンにマッチしないレコード全てを取得
+
+
+
+
 
 
