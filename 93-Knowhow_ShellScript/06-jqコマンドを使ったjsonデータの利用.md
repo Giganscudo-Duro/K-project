@@ -3,12 +3,12 @@
 - [jq - Github](https://stedolan.github.io/jq/)
 - [bashでJSONに変数を埋め込むための3つの方法 - Developers.IO](https://dev.classmethod.jp/articles/how-to-inject-variable-to-json-on-bash/)
 - [jqコマンドの基本的な使い方と便利なおぷしょんまとめ - 瀬戸内の雲のように](https://www.setouchino.cloud/blogs/19)
+- [jq コマンドが強力すぎてヤバい件 - CUBE SUGAR STORAGE](https://momijiame.tumblr.com/post/51299899637/jq-%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%81%8C%E5%BC%B7%E5%8A%9B%E3%81%99%E3%81%8E%E3%81%A6%E3%83%A4%E3%83%90%E3%81%84%E4%BB%B6)
 - [jqコマンド(jsonデータの加工、整形)の使い方 - わくわくBank](https://www.wakuwakubank.com/posts/676-linux-jq/)
 - [jqコマンドを使う日常のご紹介 - Qiita](https://qiita.com/takeshinoda@github/items/2dec7a72930ec1f658af)
 - [jqコマンドでjsonデータを整形・絞り込み - Qiita](https://qiita.com/Nakau/items/272bfd00b7a83d162e3a)
 - [シェルスクリプトでJSONを扱う - Qiita](https://qiita.com/unhurried/items/c62d29540de3e10a50ad)
 - [JSON入門 - とほほのwww入門](http://www.tohoho-web.com/ex/json.html)
-
 
 
 
@@ -127,6 +127,33 @@ json=$(cat << EOS
 EOS
 )
 ```
+
+
+
+# 実践っぽいもの
+
+## エラーが起きてるかどうかの確認
+エラーが起きたか否かは、`Error` があるか否かを `has` を使ってチェックすれば良い。  
+つまり、以下のような感じ。
+
+```sh
+CHECK=`echo ${json} | jq 'has("Error")'`
+if [ $CHECK ]; then
+    echo "json is Error Pattern..."
+    echo "MSG -> $(echo $json | jq '.Error')"
+else
+    echo "json is Success Pattern!!"
+fi
+```
+
+
+
+
+
+
+
+
+
 
 
 
