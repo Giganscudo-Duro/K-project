@@ -16,9 +16,32 @@ REST API を用いた Web サービスを開発する場合、操作の実行結
 
 
 
+# お試し
 
 
+## 返却されるデータの例
+Json 形式だと、以下のようなデータが返ってくる。  
+今回のお勉強では以下のデータが返ってくるものとして、学習を進める
 
+
+- 正常系
+    ```json
+    {
+      "id": 1,
+      "name": "myname",
+      "favorites": [
+        "baseball",
+        "videogame"
+      ]
+    }
+    ```
+
+- 異常系（エラーが起きた場合）
+    ```json
+    {
+      "Error": "Invalid parameters to context creation"
+    }
+    ```
 
 
 
