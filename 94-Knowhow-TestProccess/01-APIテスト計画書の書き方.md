@@ -12,9 +12,6 @@
 
 
 
-
-
-
 # APIテスト仕様一覧
 
 ## POST /login
@@ -25,6 +22,15 @@
     | 機能概要      | サービスにログインする（トークンを取得する）  |
     | アクセスURI   | /login                                        |
     | HTTPメソッド  | POST                                          |
+
+- 実行例
+    ここは適当。
+    ```sh
+    $ curl -i -X POST -H "Accept: application/json" \
+        -d '{ "username": "kanamaru", "password": "testpassword" }' \
+        https://localhost/login
+    ```
+
 
 
 - 提供データ（JSON）
