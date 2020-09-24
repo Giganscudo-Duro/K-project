@@ -1,5 +1,15 @@
 # 参考URL
-
+ - [YAMLファイルでコメントを記述する - まだプログラマーですが何か？](http://dotnsf.blog.jp/archives/1074215802.html)
+ - [proxy環境下でDocker Registryの構築 - Qiita](https://qiita.com/kanegoon/items/e250c0a328673b0fca82)
+ - [第49回 Dockerプライベートレジストリにユーザー認証を付ける（準備編） - ITmedia](https://www.itmedia.co.jp/enterprise/articles/1710/02/news018.html)
+ - [第50回　Dockerプライベートレジストリにユーザー認証を付ける（活用編） - ITmedia](https://www.itmedia.co.jp/enterprise/articles/1710/16/news016.html)
+ - []()
+ - []()
+ - [Docker Registry の使い方 - GitHub](https://gist.github.com/takenoco82/b9559a1abd57eb0845a77041860cd26e)
+ - [Dockerのプライベートレジストリからimageを削除する方法 - Qiita](https://qiita.com/Gin/items/c58c4485caae1c139e8f)
+ - []()
+ - []()
+ - []()
 
 
 
@@ -123,6 +133,7 @@ https://github.com/cesanta/docker_auth/blob/master/examples/simple.yml
     -e REGISTRY_AUTH_TOKEN_SERVICE="Docker registry" \
     -e REGISTRY_AUTH_TOKEN_ISSUER="Auth Service" \
     -e REGISTRY_AUTH_TOKEN_ROOTCERTBUNDLE=/ssl/server.pem \
+    -e REGISTRY_STORAGE_DELETE_ENABLED=true   \
     -v /home/auth_server/ssl:/ssl \
     -v /home/docker_registry/data:/var/lib/registry \
     --restart=always \
@@ -221,13 +232,284 @@ tag1: digest: sha256:fe2347002c630d5d61bf2f28f21246ad1c21cc6fd343e70b4cf1e5102f8
 Removing login credentials for localhost:5000
 ```
 
+# API を叩いてイメージの削除を試みる
+
+イメージの削除は docker コマンドでは実行できないので、基本的にイメージの削除は以下の流れになる
+
+1. curl で、リポジトリ一覧を取得する
+2. curl で、指定したリポジトリのタグ一覧を取得する
+3. curl で、指定したイメージのダイジェストを取得する
+4. curl で、イメージを削除する
+5. registryコンテナ内でGC(Garbage collection)を起動させる
+
+
+とりあえず順番に試してみる。
+
+## リポジトリ一覧を取得する
+
+以下のコマンドを実行。
+```sh
+# curl -v -s -k localhost:5000/v2/_catalog
+--[実行結果]----------
+*   Trying 127.0.0.1...
+* TCP_NODELAY set
+* Connected to localhost (127.0.0.1) port 5000 (#0)
+> GET /v2/_catalog HTTP/1.1
+> Host: localhost:5000
+> User-Agent: curl/7.58.0
+> Accept: */*
+>
+< HTTP/1.1 401 Unauthorized
+< Content-Type: application/json; charset=utf-8
+< Docker-Distribution-Api-Version: registry/2.0
+< Www-Authenticate: Bearer realm="https://localhost:5001/auth",service="Docker registry",scope="registry:catalog:*"
+< X-Content-Type-Options: nosniff
+< Date: Thu, 24 Sep 2020 22:18:47 GMT
+< Content-Length: 145
+<
+{"errors":[{"code":"UNAUTHORIZED","message":"authentication required","detail":[{"Type":"registry","Class":"","Name":"catalog","Action":"*"}]}]}
+* Connection #0 to host localhost left intact
+```
+
+認証コンテナを起動してるので、エラーが返ってきた。  
+仕方ないので、エラーメッセージに従い、トークンを取得する
+
+```sh
+USERNAME="admin"
+PASSWORD="admin-passwd"
+HOST="localhost:5001"
+curl -s -k \
+    -u ${USERNAME}:${PASSWORD} \
+    -d "service=Docker registry"  \
+    -d "scope=registry:catalog:*"  \
+    -d "account=${USERNAME}"  \
+    https://${HOST}/auth | jq
+--[実行結果]----------
+{
+  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IkdOM0I6STVOTDpTV0dXOk1YQzQ6T1NRSzpWQkJPOkRWQVA6WUpNVDpEV1o2OkJSSzM6VjU3UzpBS1pEIn0.eyJpc3MiOiJBdXRoIFNlcnZpY2UiLCJzdWIiOiJhZG1pbiIsImF1ZCI6IkRvY2tlciByZWdpc3RyeSIsImV4cCI6MTYwMDk4ODczNiwibmJmIjoxNjAwOTg3ODI2LCJpYXQiOjE2MDA5ODc4MzYsImp0aSI6IjMyMTMwOTA1NTcyMTE2NTg5OTkiLCJhY2Nlc3MiOlt7InR5cGUiOiJyZWdpc3RyeSIsIm5hbWUiOiJjYXRhbG9nIiwiYWN0aW9ucyI6WyIqIl19XX0.C796_jZKys0DF3CJvxhxJtEiDOHtFR5UC1yS6FTe89XWx5202lnQecF6vv11iiPmfc4OgzJZdwIA6Xmn31iSigrmHBXKhdJ8cHA5aZ2w9GA-It6r7KDwk7mBBAWL50disOTXq08tFCyYGqs6y9vxMZGC5Weud4qkGnuV0-r9Gp5Oawrq8IYOKZur_36uY75NxOiJv-_g7H5TG1BwubvvT0YNdgGnqAtNTeN996qSJFqWnqV7V_T2SImqD6w_0sxnrqoBE8vwzT0GIlGsZpzecwws5iPG8uccilwBA6AlC1O62dsZPniIaEChcu5RfVlpT7c-_j5lxjCE-hVHKutRFw",
+  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IkdOM0I6STVOTDpTV0dXOk1YQzQ6T1NRSzpWQkJPOkRWQVA6WUpNVDpEV1o2OkJSSzM6VjU3UzpBS1pEIn0.eyJpc3MiOiJBdXRoIFNlcnZpY2UiLCJzdWIiOiJhZG1pbiIsImF1ZCI6IkRvY2tlciByZWdpc3RyeSIsImV4cCI6MTYwMDk4ODczNiwibmJmIjoxNjAwOTg3ODI2LCJpYXQiOjE2MDA5ODc4MzYsImp0aSI6IjMyMTMwOTA1NTcyMTE2NTg5OTkiLCJhY2Nlc3MiOlt7InR5cGUiOiJyZWdpc3RyeSIsIm5hbWUiOiJjYXRhbG9nIiwiYWN0aW9ucyI6WyIqIl19XX0.C796_jZKys0DF3CJvxhxJtEiDOHtFR5UC1yS6FTe89XWx5202lnQecF6vv11iiPmfc4OgzJZdwIA6Xmn31iSigrmHBXKhdJ8cHA5aZ2w9GA-It6r7KDwk7mBBAWL50disOTXq08tFCyYGqs6y9vxMZGC5Weud4qkGnuV0-r9Gp5Oawrq8IYOKZur_36uY75NxOiJv-_g7H5TG1BwubvvT0YNdgGnqAtNTeN996qSJFqWnqV7V_T2SImqD6w_0sxnrqoBE8vwzT0GIlGsZpzecwws5iPG8uccilwBA6AlC1O62dsZPniIaEChcu5RfVlpT7c-_j5lxjCE-hVHKutRFw"
+}
+```
+
+必要なのは token だけなので、変数にでもコピーしておく。
+
+```sh
+USERNAME="admin"
+PASSWORD="admin-passwd"
+HOST="localhost"
+TOKEN=`curl -s -k \
+  -u ${USERNAME}:${PASSWORD} \
+  -d "service=Docker registry"  \
+  -d "scope=registry:catalog:*"  \
+  -d "account=${USERNAME}"  \
+  https://${HOST}:5001/auth | jq '.token' -r `
+curl -s -k -H "Authorization: Bearer ${TOKEN}" http://${HOST}:5000/v2/_catalog | jq
+--[実行結果]----------
+{
+  "repositories": [
+    "admin-image",
+    "kana",
+    "ubuntu"
+  ]
+}
+```
+これで、イメージリストは取得できた。
+(kana と ubuntu はお遊びで登録してしまったイメージ)
+
+
+## 指定したリポジトリのタグ一覧を取得
+以下のコマンドを実行。
+
+```sh
+# curl -v -s -k localhost:5000/v2/admin-image/tags/list
+--[実行結果]----------
+*   Trying 127.0.0.1...
+* TCP_NODELAY set
+* Connected to localhost (127.0.0.1) port 5000 (#0)
+> GET /v2/admin-image/tags/list HTTP/1.1
+> Host: localhost:5000
+> User-Agent: curl/7.58.0
+> Accept: */*
+>
+< HTTP/1.1 401 Unauthorized
+< Content-Type: application/json; charset=utf-8
+< Docker-Distribution-Api-Version: registry/2.0
+< Www-Authenticate: Bearer realm="https://localhost:5001/auth",service="Docker registry",scope="repository:admin-image:pull"
+< X-Content-Type-Options: nosniff
+< Date: Thu, 24 Sep 2020 22:55:23 GMT
+< Content-Length: 154
+<
+{"errors":[{"code":"UNAUTHORIZED","message":"authentication required","detail":[{"Type":"repository","Class":"","Name":"admin-image","Action":"pull"}]}]}
+* Connection #0 to host localhost left intact
+```
 
 
 
+面倒だけど、再びトークンを取得
+```sh
+$ curl -s -k \
+    -u admin:admin-passwd \
+    -d "service=Docker registry"  \
+    -d "scope=repository:admin-image:pull"  \
+    -d "account=admin"  \
+    https://${HOST}/auth | jq
+```
+
+スクリプト化
+```sh
+USERNAME="admin"
+PASSWORD="admin-passwd"
+HOST="localhost"
+API="v2/admin-image/tags/list"
+IMAGE="admin-image"
+SCOPE="repository:${IMAGE}:pull"
+TOKEN=`curl -s -k \
+  -u ${USERNAME}:${PASSWORD} \
+  -d "service=Docker registry"  \
+  -d "scope=${SCOPE}"  \
+  -d "account=${USERNAME}"  \
+  https://${HOST}:5001/auth | jq '.token' -r `
+curl -s -k -H "Authorization: Bearer ${TOKEN}" http://${HOST}:5000/${API} | jq
+--[実行結果]----------
+{
+  "name": "admin-image",
+  "tags": [
+    "tag1"
+  ]
+}
+```
 
 
+## 指定したイメージのダイジェストを取得
+
+```sh
+curl -X GET -H "Accept: application/vnd.docker.distribution.manifest.v2+json" -s -D - http://localhost:5000/v2/admin-image/manifests/tag1
+--[実行結果]----------
+HTTP/1.1 401 Unauthorized
+Content-Type: application/json; charset=utf-8
+Docker-Distribution-Api-Version: registry/2.0
+Www-Authenticate: Bearer realm="https://localhost:5001/auth",service="Docker registry",scope="repository:admin-image:pull"
+X-Content-Type-Options: nosniff
+Date: Thu, 24 Sep 2020 23:03:35 GMT
+Content-Length: 154
+
+{"errors":[{"code":"UNAUTHORIZED","message":"authentication required","detail":[{"Type":"repository","Class":"","Name":"admin-image","Action":"pull"}]}]}
+```
+
+面倒だけど、再びトークンを取得
+```sh
+$ curl -s -k \
+    -u admin:admin-passwd \
+    -d "service=Docker registry"  \
+    -d "scope=repository:admin-image:pull"  \
+    -d "account=admin"  \
+    https://localhost:5001/auth | jq
+```
+
+スクリプト化
+```sh
+USERNAME="admin"
+PASSWORD="admin-passwd"
+HOST="localhost"
+IMAGE="admin-image"
+TAG="tag1"
+SCOPE="repository:${IMAGE}:pull"
+API="v2/${IMAGE}/manifests/${TAG}"
+TOKEN=`curl -s -k \
+  -u ${USERNAME}:${PASSWORD} \
+  -d "service=Docker registry"  \
+  -d "scope=${SCOPE}"  \
+  -d "account=${USERNAME}"  \
+  https://${HOST}:5001/auth | jq '.token' -r `
+curl -v -H "Authorization: Bearer ${TOKEN}" -H "Accept: application/vnd.docker.distribution.manifest.v2+json" http://${HOST}:5000/${API}
+--[実行結果]----------
+> Accept: application/vnd.docker.distribution.manifest.v2+json
+>
+< HTTP/1.1 200 OK
+< Content-Length: 529
+< Content-Type: application/vnd.docker.distribution.manifest.v2+json
+< Docker-Content-Digest: sha256:fe2347002c630d5d61bf2f28f21246ad1c21cc6fd343e70b4cf1e5102f8711a9
+< Docker-Distribution-Api-Version: registry/2.0
+< Etag: "sha256:fe2347002c630d5d61bf2f28f21246ad1c21cc6fd343e70b4cf1e5102f8711a9"
+< X-Content-Type-Options: nosniff
+< Date: Thu, 24 Sep 2020 23:10:19 GMT
+<
+{
+   "schemaVersion": 2,
+   "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+   "config": {
+      "mediaType": "application/vnd.docker.container.image.v1+json",
+      "size": 2794,
+      "digest": "sha256:7e6257c9f8d8d4cdff5e155f196d67150b871bbe8c02761026f803a704acb3e9"
+   },
+   "layers": [
+      {
+         "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+         "size": 75863188,
+         "digest": "sha256:75f829a71a1c5277a7abf55495ac8d16759691d980bf1d931795e5eb68a294c0"
+      }
+   ]
+* Connection #0 to host localhost left intact
+}
+```
+必要なのは、「Docker-Content-Digest」の項目だけ。
 
 
+## イメージを削除する
+先程指定した「Docker-Content-Digest」を指定して、削除を試みる。
+```sh
+curl -v -X DELETE http://localhost:5000/v2/admin-image/manifests/sha256:fe2347002c630d5d61bf2f28f21246ad1c21cc6fd343e70b4cf1e5102f8711a9
+--[実行結果]----------
+*   Trying 127.0.0.1...
+* TCP_NODELAY set
+* Connected to localhost (127.0.0.1) port 5000 (#0)
+> DELETE /v2/admin-image/manifests/sha256:fe2347002c630d5d61bf2f28f21246ad1c21cc6fd343e70b4cf1e5102f8711a9 HTTP/1.1
+> Host: localhost:5000
+> User-Agent: curl/7.58.0
+> Accept: */*
+>
+< HTTP/1.1 401 Unauthorized
+< Content-Type: application/json; charset=utf-8
+< Docker-Distribution-Api-Version: registry/2.0
+< Www-Authenticate: Bearer realm="https://localhost:5001/auth",service="Docker registry",scope="repository:admin-image:delete"
+< X-Content-Type-Options: nosniff
+< Date: Thu, 24 Sep 2020 23:11:23 GMT
+< Content-Length: 156
+<
+{"errors":[{"code":"UNAUTHORIZED","message":"authentication required","detail":[{"Type":"repository","Class":"","Name":"admin-image","Action":"delete"}]}]}
+* Connection #0 to host localhost left intact
+```
+
+面倒だけど、再びトークンを取得
+```sh
+$ curl -s -k \
+    -u admin:admin-passwd \
+    -d "service=Docker registry"  \
+    -d "scope=repository:admin-image:delete"  \
+    -d "account=admin"  \
+    https://localhost:5001/auth | jq
+```
+
+スクリプト化
+```sh
+USERNAME="admin"
+PASSWORD="admin-passwd"
+HOST="localhost"
+IMAGE="admin-image"
+TAG="tag1"
+DIGEST="sha256:fe2347002c630d5d61bf2f28f21246ad1c21cc6fd343e70b4cf1e5102f8711a9"
+SCOPE="repository:${IMAGE}:delete"
+API="v2/${IMAGE}/manifests/${DIGEST}"
+TOKEN=`curl -s -k \
+  -u ${USERNAME}:${PASSWORD} \
+  -d "service=Docker registry"  \
+  -d "scope=${SCOPE}"  \
+  -d "account=${USERNAME}"  \
+  https://${HOST}:5001/auth | jq '.token' -r `
+curl -X DELETE -H "Authorization: Bearer ${TOKEN}" http://${HOST}:5000/${API}
+--[実行結果]----------
+```
+必要なのは、「Docker-Content-Digest」の項目だけ。
 
 
 
