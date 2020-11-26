@@ -17,7 +17,6 @@ set nu
 " set nonu
 
 
-
 " 現在の行を強調表示
 set cursorline
 " 現在の行を強調表示（縦）
@@ -27,12 +26,10 @@ set cursorline
 set autoindent
 
 
-
 " vimgrep をより便利に
 autocmd QuickFixCmdPost *grep* cwindow
 map <C-n> :cn<CR>
 map <C-p> :cp<CR>
-
 
 
 " 検索時の文字列をハイライトするか否か
@@ -41,14 +38,14 @@ set hlsearch	" ハイライトする
 nnoremap <ESC><ESC> :nohlsearch<CR>	" ESCを２回叩くとハイライト解除
 
 
-
+" 全角野スペースをハイライト
 highlight ZenkakuSpace cterm=underline ctermfg=lightblue guibg=#666666
 au BufNewFile,BufRead * match ZenkakuSpace /　/
 
 
-
 " 入力中のコマンドをステータスに表示する
 set showcmd
+
 
 " 検索語が画面の真ん中に来るようにする
 nmap n nzz 
@@ -59,16 +56,9 @@ nmap g* g*zz
 nmap g# g#zz
 
 
-
+" タブ利用時のショートカット
 nnoremap <C-l> :tabnext<CR>
 nnoremap <C-h> :tabprevious<CR>
-
-
-" 行末のスペースを可視化する
-set list
-set listchars=eol:\ ,trail:_
-
-
 
 
 " ファイル名を表示する
