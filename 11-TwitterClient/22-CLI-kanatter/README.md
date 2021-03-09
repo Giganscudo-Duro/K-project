@@ -9,7 +9,7 @@
     ```
 
 2. 開発者用のトークンを取得  
-    Twitter にログインした状態で、開発者用ページ（https://developer.twitter.com/en/apps/）にアクセスする。  
+    Twitter にログインした状態で、開発者用ページ（[https://developer.twitter.com/en/apps/](https://developer.twitter.com/en/apps/)）にアクセスする。  
     「登録したアプリ」にある [Details] ボタンを選択して画面を切り替える。  
     [Keys and tokens] ボタンをクリックして画面を切り替える。  
     表示されたキーとトークンをメモする
