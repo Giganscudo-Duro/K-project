@@ -1,0 +1,6 @@
+CONSUMER_KEY = "<API key>"
+CONSUMER_SECRET = "<API secret key>"
+ACCESS_TOKEN = "<Access token>"
+ACCESS_TOKEN_SECRET = "<Access token secret>"
+GEO_LAT = "34.995272"                          # 緯度、設定したくなければ "" でおｋ
+GEO_LONG = "135.895358"                        # 経度、設定したくなければ "" でおｋ

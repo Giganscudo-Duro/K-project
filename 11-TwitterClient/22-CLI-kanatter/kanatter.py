@@ -47,7 +47,7 @@ parser_add.set_defaults(handler=command_hometimeline)
 # usertimeline コマンドの parser を作成
 parser_add = subparsers.add_parser("usertimeline", help="see `usertimeline -h`")
 parser_add.add_argument("username", type=str, help="user name")
-parser_add.add_argument("--count", default="10", help="num of tweet")
+parser_add.add_argument("--count", default="20", help="num of tweet(1~200)")
 parser_add.set_defaults(handler=command_usertimeline)
 
 # delete コマンドの parser を作成

@@ -14,7 +14,8 @@ def user_timeline(twitter, args):
     res = get_user.show(twitter, params = params)
     userinfo = json.loads(res.text)
     params = {
-        "user_id" : userinfo['id']
+        "user_id" : userinfo['id'],
+        "count" : args.count
     }
     res = get_status.user_timeline(twitter, params = params)
     if res.status_code == 200:
