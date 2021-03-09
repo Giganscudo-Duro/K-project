@@ -3,9 +3,9 @@
 1. 利用に必要なパッケージのインストール  
     以下のコマンドを実行。
     ```sh
-    # yum install pip
-    # pip install requests  ←---------- Python で Rest API 操作を簡単に行うためのライブラリ
-    # pip install requests-oauthlib  ←- Python で OAuth 認証を簡単に行うためのライブラリ
+    $ sudo yum install pip
+    $ pip install requests  ←---------- Python で Rest API 操作を簡単に行うためのライブラリ
+    $ pip install requests-oauthlib  ←- Python で OAuth 認証を簡単に行うためのライブラリ
     ```
 
 2. 開発者用のトークンを取得  
@@ -33,17 +33,17 @@
 
 
 # CLI の仕様
-```py
+```sh
 $ kanatter COMMAND <OPTION>
 ```
 上記を実現する場合、subparser を使うと良いとのこと。
 
 
-# ツイッターで開発者として登録する
-https://developer.twitter.com/en/apps/ にアクセスして設定すればいい。  
+# ［メモ］ツイッターで開発者として登録する
+[https://developer.twitter.com/en/apps/](https://developer.twitter.com/en/apps/) にアクセスして設定すればいい。  
 英語で色々と目的やら何やらを入力する必要がある。  
 今はこんなサイトも用意されてるみたい（便利でいいね）  
-https://www.itti.jp/web-direction/how-to-apply-for-twitter-api/
+[https://www.itti.jp/web-direction/how-to-apply-for-twitter-api/](https://www.itti.jp/web-direction/how-to-apply-for-twitter-api/)
 
 
 
@@ -63,7 +63,7 @@ https://www.itti.jp/web-direction/how-to-apply-for-twitter-api/
 - [とほほのpython 入門](http://www.tohoho-web.com/python/function.html)
 - [python でファイル処理のGUIプログラムを作ってみた](https://qiita.com/chanmaru/items/8e5ebf7d8b0b21c8fd3a)
 - [](https://qiita.com/bakira/items/00743d10ec42993f85eb)
-
+- [Syncer](https://syncer.jp/Web/API/Twitter/REST_API/GET/statuses/user_timeline/)
 
 
 https://qiita.com/oohira/items/308bbd33a77200a35a3d
