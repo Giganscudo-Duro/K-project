@@ -62,10 +62,10 @@ $ kanatter COMMAND <OPTION>
 - [python でぬるオブジェクトの比較](https://qiita.com/tortuepin/items/44fdb63cc82dfd260575)
 - [とほほのpython 入門](http://www.tohoho-web.com/python/function.html)
 - [python でファイル処理のGUIプログラムを作ってみた](https://qiita.com/chanmaru/items/8e5ebf7d8b0b21c8fd3a)
-- [](https://qiita.com/bakira/items/00743d10ec42993f85eb)
 - [Syncer](https://syncer.jp/Web/API/Twitter/REST_API/GET/statuses/user_timeline/)
 
 
-https://qiita.com/oohira/items/308bbd33a77200a35a3d
-https://qiita.com/moroku0519/items/315cd25d3eaae3217103
+- [](https://qiita.com/bakira/items/00743d10ec42993f85eb)
+- [](https://qiita.com/oohira/items/308bbd33a77200a35a3d)
+- [](https://qiita.com/moroku0519/items/315cd25d3eaae3217103)
 
