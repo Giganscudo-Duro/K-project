@@ -6,6 +6,7 @@
 # CentOS 系の場合
 ```sh
 curl https://raw.githubusercontent.com/Giganscudo-Duro/K-project/develop/99-Knowhow_DotFile/00-Linux/vimrc -o ~/.vimrc
+curl https://raw.githubusercontent.com/Giganscudo-Duro/K-project/develop/99-Knowhow_DotFile/00-Linux/gvimrc -o ~/.gvimrc
 curl https://raw.githubusercontent.com/Giganscudo-Duro/K-project/develop/99-Knowhow_DotFile/00-Linux/screenrc -o ~/.screenrc
 
 sudo dnf install -y epel-release
