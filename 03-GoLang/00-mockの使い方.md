@@ -5,27 +5,11 @@
 - gomock と mockgen の組み合わせ
 - testify/mock
 
-
-
 # 学習環境
 VM番号は 153
 OS は Ubuntu18.04
 
-
-
-
-
-
 # 最新のgoをインストール
-
-
-
-
-
-
-
-
-
 
 
 
@@ -41,14 +25,6 @@ https://qiita.com/tenntenn/items/24fc34ec0c31f6474e6d
 # go get github.com/golang/mock/gomock
 # go get github.com/golang/mock/mockgen
 ```
-
-
-
-
-
-
-
-
 
 
 
