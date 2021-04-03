@@ -7,7 +7,6 @@
 ## 1. 公式以外の Docker を排除する
 公式版と Red Hat 版の競合があるため、関係するパッケージ一式を排除する必要がある。
 もし何らかの Docker をインストールしていた場合は、以下のコマンドを実行して排除する。
-
 ```shell
 $ sudo yum remove docker \
                   docker-client \
@@ -20,12 +19,9 @@ $ sudo yum remove docker \
 ```
 
 
-
-
 ## 2. yum コマンド実行時に使うパッケージを導入する
 公式版 Docker をインストールする際には、特定のリポジトリを有効化して `yum` コマンドを実行することになる。
 先ずは、そのオプションを使うためのパッケージと、公式 Docker リポジトリを追加するため、以下のコマンドを実行する。
-
 ```shell
 $ sudo yum install -y yum-utils
 
@@ -37,14 +33,12 @@ $ sudo yum-config-manager \
 
 ## 3. Docker-CE を導入する
 とりあえず、最新版をいれればOKなので、以下のコマンドを実行する。
-
 ```shell
 $ sudo yum install docker-ce docker-ce-cli containerd.io
 ```
 
 ## 4. Docker-CE をサービスとして登録＆スタートさせる
-
-
+毎回スタートさせたりするのは面倒なので、以下のコマンドで登録＆スタートさせる。
 ```shell
 $ sudo systemctl enable docker
 $ sudo systemctl start docker
@@ -68,4 +62,5 @@ $ sudo rm -rf /var/lib/containerd
 
 
 # 参考URL
-[公式Docker導入の手順 - Doker Docs](https://docs.docker.com/get-docker/)
+[Get Docker - Docker Docs](https://docs.docker.com/get-docker/)
+[Install Docker Engine - Docker Docs](https://docs.docker.com/engine/install/)
